@@ -101,14 +101,29 @@ M.abbrev_authors = function(parsed, opts)
   local authors = {}
   local sep = ' and ' -- Authors are separated by ' and ' in bibtex entries
 
+M.abbrev_authors = function(parsed, opts)
+  opts = opts or {}
+  -- Default to true only if not explicitly set
+  if opts.trim_firstname == nil then opts.trim_firstname = true end
+  opts.max_auth = opts.max_auth or 2
+
+  local shortened
+  local authors = {}
+  local sep = ' and ' -- Authors are separated by ' and ' in bibtex entries
+
   for _, auth in pairs(M.split_str(parsed.author, sep)) do
     local lastname, firstnames = auth:match('(.*)%, (.*)')
     if firstnames == nil then
       firstnames, lastname = auth:match('(.*)% (.*)')
     end
-    if opts.trim_firstname == true and firstnames ~= nil then
+
+    if opts.trim_firstname == true and lastname then
+      -- Only keep last name
+      auth = lastname
+    elseif firstnames ~= nil then
+      -- Fallback: show Lastname, I.N.
       local initials = M.make_initials(firstnames, '.')
-      auth = lastname --.. ', ' .. initials
+      auth = lastname .. ', ' .. initials
     end
 
     table.insert(authors, auth)
@@ -126,6 +141,7 @@ M.abbrev_authors = function(parsed, opts)
 
   return shortened
 end
+
 
 M.fileExists = function(file)
   return vim.fn.empty(vim.fn.glob(file)) == 0
