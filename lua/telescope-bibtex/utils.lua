@@ -107,8 +107,8 @@ M.abbrev_authors = function(parsed, opts)
       firstnames, lastname = auth:match('(.*)% (.*)')
     end
     if opts.trim_firstname == true and firstnames ~= nil then
-      --local initials = M.make_initials(firstnames, '.')
-      --auth = lastname .. ', ' .. initials
+      local initials = M.make_initials(firstnames, '.')
+      auth = lastname .. ',  POUET' .. initials
     elseif opts.trim_firstname == 'NULL' and firstnames ~= nil then -- added a NULL option to remove completly first name information in citation
       auth = lastname
     end
